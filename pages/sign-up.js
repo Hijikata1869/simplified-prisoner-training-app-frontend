@@ -1,11 +1,10 @@
 import Layout from "../components/Layout";
+import Auth from "../components/Auth";
 
 export default function SignUp() {
   return (
     <Layout>
-      <div>
-        <h1>新規登録ページです</h1>
-      </div>
+      <Auth />
     </Layout>
   );
 }
