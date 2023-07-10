@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 
 import Layout from "../components/Layout";
 
-export default function SignUp() {
-  const router = useRouter();
-  const [nickname, setNickname] = useState("");
+export default function SignIn() {
+  const route = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmationPassword, setConfirmationPassword] = useState("");
 
-  const signUp = async (e) => {
+  const login = async (e) => {
     e.preventDefault();
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_RAILSAPI_URL}users`, {
+      await fetch(`${process.env.NEXT_PUBLIC_RAILSAPI_URL}login`, {
         method: "POST",
         body: JSON.stringify({
           name: nickname,
@@ -34,46 +31,23 @@ export default function SignUp() {
         .then((data) => {
           console.log(data);
         });
-      // router.push("training-log");
+      router.push("training-log");
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-    <Layout title="新規登録">
+    <Layout title="ログイン">
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            新規登録
+            ログイン
           </h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" onSubmit={signUp}>
-            <div>
-              <label
-                htmlFor="nickname"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                ニックネーム
-              </label>
-              <div className="mt-2">
-                <input
-                  id="nickname"
-                  name="nickname"
-                  type="text"
-                  autoComplete="nickname"
-                  required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  value={nickname}
-                  onChange={(e) => {
-                    setNickname(e.target.value);
-                  }}
-                />
-              </div>
-            </div>
-
+          <form className="space-y-6">
             <div>
               <label
                 htmlFor="email"
@@ -123,31 +97,6 @@ export default function SignUp() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="confirmationPassword"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  パスワード(確認用)
-                </label>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="confirmationPassword"
-                  name="confirmationPassword"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  value={confirmationPassword}
-                  onChange={(e) => {
-                    setConfirmationPassword(e.target.value);
-                  }}
-                />
-              </div>
-            </div>
-
-            <div>
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -156,15 +105,6 @@ export default function SignUp() {
               </button>
             </div>
           </form>
-
-          <p className="mt-10 text-center text-sm text-gray-500">
-            登録済みの方は{" "}
-            <Link href="/sign-in">
-              <a className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                こちらからログイン
-              </a>
-            </Link>
-          </p>
         </div>
       </div>
     </Layout>
