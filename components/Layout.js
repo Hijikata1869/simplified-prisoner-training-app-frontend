@@ -10,7 +10,7 @@ export default function Layout({ children, title = "Default title" }) {
         <title>{title}</title>
       </Head>
       <Header />
-      <main className="flex flex-1">{children}</main>
+      <main className="flex flex-1 flex-col pb-10">{children}</main>
       <Footer />
     </div>
   );
