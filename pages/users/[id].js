@@ -5,17 +5,52 @@ import { fetchUser, getAllUserIds } from "../../lib/users";
 
 import Layout from "../../components/Layout";
 
+const trainingMenusArr = [
+  "プッシュアップ",
+  "スクワット",
+  "プルアップ",
+  "レッグレイズ",
+  "ブリッジ",
+  "ハンドスタンドプッシュアップ",
+];
+
+const makeSteps = () => {
+  let array = [];
+  for (let i = 1; i < 11; i++) {
+    array.push(String(`ステップ${i}`));
+  }
+  return array;
+};
+
+const makeReps = () => {
+  let array = [];
+  for (let i = 1; i < 51; i++) {
+    array.push(String(`${i}回`));
+  }
+  return array;
+};
+
+const makeSets = () => {
+  let array = [];
+  for (let i = 1; i < 11; i++) {
+    array.push(String(`${i}セット`));
+  }
+  return array;
+};
+
 export default function UserTrainingLogs({ userData }) {
   const router = useRouter();
   const { id } = router.query;
   const { user } = userData;
-  const [trainingMenu, setTrainingMenu] = useState("");
-  const [step, setStep] = useState("");
-  const [reps, setReps] = useState("");
-  const [sets, setSets] = useState("");
+  const [trainingMenu, setTrainingMenu] = useState("プッシュアップ");
+  const [step, setStep] = useState("ステップ１");
+  const [reps, setReps] = useState("１回");
+  const [sets, setSets] = useState("１セット");
+  const stepsArr = makeSteps();
+  const repsArr = makeReps();
+  const setsArr = makeSets();
 
   const hundleValueChange = (e) => {
-    // console.log(e.target.id);
     switch (e.target.id) {
       case "trainingMenu":
         setTrainingMenu(e.target.value);
@@ -52,14 +87,14 @@ export default function UserTrainingLogs({ userData }) {
           value={trainingMenu}
           onChange={hundleValueChange}
         >
-          <option value="プッシュアップ">プッシュアップ</option>
-          <option value="スクワット"> スクワット</option>
-          <option value="プルアップ">プルアップ</option>
-          <option value="レッグレイズ">レッグレイズ</option>
-          <option value="ブリッジ">ブリッジ</option>
-          <option value="ハンドスタンドプッシュアップ">
-            ハンドスタンドプッシュアップ
-          </option>
+          {trainingMenusArr.map((trainingMenu, index) => {
+            return (
+              <option
+                key={index}
+                value={trainingMenu}
+              >{`${trainingMenu}`}</option>
+            );
+          })}
         </select>
         <label
           htmlFor="step"
@@ -73,11 +108,9 @@ export default function UserTrainingLogs({ userData }) {
           value={step}
           onChange={hundleValueChange}
         >
-          <option value="ステップ１">ステップ</option>
-          <option value="US">United States</option>
-          <option value="CA">Canada</option>
-          <option value="FR">France</option>
-          <option value="DE">Germany</option>
+          {stepsArr.map((step, index) => {
+            return <option key={index} value={`${step}`}>{`${step}`}</option>;
+          })}
         </select>
         <label
           htmlFor="reps"
@@ -91,11 +124,9 @@ export default function UserTrainingLogs({ userData }) {
           value={reps}
           onChange={hundleValueChange}
         >
-          <option value="１回">回数</option>
-          <option value="US">United States</option>
-          <option value="CA">Canada</option>
-          <option value="FR">France</option>
-          <option value="DE">Germany</option>
+          {repsArr.map((rep, index) => {
+            return <option key={index} value={rep}>{`${rep}`}</option>;
+          })}
         </select>
         <label
           htmlFor="sets"
@@ -109,11 +140,9 @@ export default function UserTrainingLogs({ userData }) {
           value={sets}
           onChange={hundleValueChange}
         >
-          <option value="１セット">セット数</option>
-          <option value="US">United States</option>
-          <option value="CA">Canada</option>
-          <option value="FR">France</option>
-          <option value="DE">Germany</option>
+          {setsArr.map((set, index) => {
+            return <option key={index} value={`${set}`}>{`${set}`}</option>;
+          })}
         </select>
         <button
           className="bg-indigo-500  px-4 py-4 mt-10 w-full text-white"
