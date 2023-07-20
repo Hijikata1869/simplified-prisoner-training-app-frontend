@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+import Cookie from "universal-cookie";
+
+const cookie = new Cookie();
+
 export default function Header() {
   return (
     <header className="w-full">
@@ -20,11 +24,23 @@ export default function Header() {
             </a>
           </Link>
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-            ログインはこちら<span aria-hidden="true">&rarr;</span>
-          </a>
-        </div>
+        {cookie.get("session_id") ? (
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            <Link href="/sign-in">
+              <a className="text-sm font-semibold leading-6 text-gray-900">
+                ログアウトする<span aria-hidden="true">&rarr;</span>
+              </a>
+            </Link>
+          </div>
+        ) : (
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            <Link href="/sign-in">
+              <a className="text-sm font-semibold leading-6 text-gray-900">
+                ログインはこちら<span aria-hidden="true">&rarr;</span>
+              </a>
+            </Link>
+          </div>
+        )}
       </nav>
     </header>
   );

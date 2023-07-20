@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Cookie from "universal-cookie";
 
 import Layout from "../components/Layout";
 
+const cookie = new Cookie();
+
 export default function SignIn() {
-  const route = useRouter();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -14,10 +17,8 @@ export default function SignIn() {
       await fetch(`${process.env.NEXT_PUBLIC_RAILSAPI_URL}login`, {
         method: "POST",
         body: JSON.stringify({
-          name: nickname,
           email: email,
           password: password,
-          password_confirmation: confirmationPassword,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -29,9 +30,10 @@ export default function SignIn() {
           }
         })
         .then((data) => {
-          console.log(data);
+          const options = { path: "/" };
+          cookie.set("session_id", data.session_id, options);
         });
-      router.push("training-log");
+      // router.push("training-log");
     } catch (err) {
       console.error(err);
     }
@@ -47,7 +49,7 @@ export default function SignIn() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={login}>
             <div>
               <label
                 htmlFor="email"
@@ -58,8 +60,7 @@ export default function SignIn() {
               <div className="mt-2">
                 <input
                   id="email"
-                  name="email"
-                  type="email"
+                  type="text"
                   autoComplete="email"
                   required
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -83,7 +84,6 @@ export default function SignIn() {
               <div className="mt-2">
                 <input
                   id="password"
-                  name="password"
                   type="password"
                   autoComplete="current-password"
                   required
