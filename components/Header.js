@@ -1,10 +1,37 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import Cookie from "universal-cookie";
 
 const cookie = new Cookie();
 
 export default function Header() {
+  const router = useRouter();
+
+  const hundleLogout = async (e) => {
+    e.preventDefault();
+    const params = { session_id: cookie.get("session_id") };
+    const query = new URLSearchParams(params);
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_RAILSAPI_URL}login?${query}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            cookie.remove("session_id");
+          }
+        })
+        .then(() => {
+          router.push("/");
+        });
+    } catch (err) {
+      console.err(err);
+    }
+  };
+
   return (
     <header className="w-full">
       <nav
@@ -41,6 +68,7 @@ export default function Header() {
               <a
                 suppressHydrationWarning
                 className="text-sm font-semibold leading-6 text-gray-900"
+                onClick={() => hundleLogout(e)}
               >
                 ログアウトする<span aria-hidden="true">&rarr;</span>
               </a>
