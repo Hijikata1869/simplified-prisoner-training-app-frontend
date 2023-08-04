@@ -1,15 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Image from "next/image";
-
-import Cookie from "universal-cookie";
+import useSWR from "swr";
 
 import { fetchCurrentUser, fetchUser, getAllUserIds } from "../../lib/users";
 import { fetchUserTrainingLogs } from "../../lib/training-logs";
 
 import Layout from "../../components/Layout";
-
-const cookie = new Cookie();
 
 const trainingMenusArr = [
   "プッシュアップ",
@@ -60,12 +56,12 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const setsArr = makeSets();
 
   useEffect(() => {
-    fetchCurrentUser(cookie.get("session_id"))
+    fetchCurrentUser()
       .then((res) => {
         return res.currentUser;
       })
       .then((data) => {
-        setCurrentUser(data.current_user);
+        setCurrentUser(data.currentUser);
       })
       .catch((err) => {
         console.error(err);
@@ -111,15 +107,16 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
             "Content-Type": "application/json",
           },
         }
-      )
-        .then((res) => {
-          if (res.status === 200) {
-            return res.json();
-          }
-        })
-        .then((data) => {
-          console.log(data);
-        });
+      ).then((res) => {
+        if (res.status === 200) {
+          window.location.reload();
+          // setTrainingMenu("プッシュアップ");
+          // setStep("ステップ１");
+          // setReps("１回");
+          // setSets("１セット");
+          // setMemo("");
+        }
+      });
     } catch (err) {
       console.error(err);
     }
@@ -128,7 +125,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   return (
     <Layout title={`${user.name}さんのトレーニング記録`}>
       <div className="lg:w-96">
-        {user.id === currentUser.id ? (
+        {user.id === currentUser?.id ? (
           <>
             <h1 className="mb-6 font-bold text-2xl">トレーニングを記録する</h1>
             <div className="pb-20">
@@ -221,7 +218,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
                 ></textarea>
               </div>
               <button
-                className="bg-indigo-500  px-4 py-4 mt-10 w-full text-white rounded-md"
+                className="bg-indigo-500  px-2 py-2 mt-10 w-full text-white rounded-md"
                 onClick={(e) => postTrainingLogAction(e)}
               >
                 送信
@@ -231,7 +228,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
         ) : null}
         <div>
           <h1 className="font-bold text-2xl">{`${user.name}さんのトレーニング記録`}</h1>
-          {userTrainingLogs.length ? (
+          {userTrainingLogs?.length ? (
             userTrainingLogs.map((trainingLog, index) => {
               return (
                 <div key={index} className="flex flex-col p-4 w-80">
@@ -260,17 +257,12 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
               );
             })
           ) : (
-            <p>トレーニング記録はありません</p>
+            <p className="pt-4">トレーニング記録はありません</p>
           )}
         </div>
-        <div>
-          <button
-            className="bg-gray-500 p-10"
-            onClick={() => console.log(userTrainingLogs)}
-          >
-            PROPS
-          </button>
-        </div>
+        {/* <div>
+          <button className="bg-gray-500 p-10">PROPS</button>
+        </div> */}
       </div>
     </Layout>
   );

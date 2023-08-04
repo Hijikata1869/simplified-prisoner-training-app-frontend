@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import Cookie from "universal-cookie";
+import { useCookies } from "react-cookie";
 
 import Layout from "../components/Layout";
-
-const cookie = new Cookie();
 
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [cookies, setCookie] = useCookies(["_pta_session"]);
 
   const login = async (e) => {
     e.preventDefault();
@@ -23,6 +22,7 @@ export default function SignIn() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       })
         .then((res) => {
           if (res.status === 200) {
@@ -30,10 +30,12 @@ export default function SignIn() {
           }
         })
         .then((data) => {
-          const options = { path: "/" };
-          cookie.set("session_id", data.session_id, options);
+          setCookie("_pta_session", data.sessionId, { path: "/" });
+          return data.user;
+        })
+        .then((user) => {
+          router.push(`users/${user.id}`);
         });
-      // router.push("training-log");
     } catch (err) {
       console.error(err);
     }
@@ -41,7 +43,7 @@ export default function SignIn() {
 
   return (
     <Layout title="ログイン">
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8 lg:pb-40">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             ログイン
