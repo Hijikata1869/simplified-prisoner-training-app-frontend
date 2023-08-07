@@ -40,11 +40,12 @@ const makeSets = () => {
   return array;
 };
 
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
 export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const router = useRouter();
-  const { id } = router.query;
   const { user } = userData;
-  const { userTrainingLogs } = userTrainingLogsData;
+  // const { userTrainingLogs } = userTrainingLogsData;
   const [currentUser, setCurrentUser] = useState([]);
   const [trainingMenu, setTrainingMenu] = useState("プッシュアップ");
   const [step, setStep] = useState("ステップ１");
@@ -54,6 +55,17 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const stepsArr = makeSteps();
   const repsArr = makeReps();
   const setsArr = makeSets();
+
+  const {
+    data: { userTrainingLogs },
+    mutate,
+  } = useSWR(
+    `${process.env.NEXT_PUBLIC_RAILSAPI_URL}users/${user.id}/training_logs`,
+    fetcher,
+    {
+      fallbackData: userTrainingLogsData,
+    }
+  );
 
   useEffect(() => {
     fetchCurrentUser()
@@ -66,6 +78,11 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
       .catch((err) => {
         console.error(err);
       });
+  }, []);
+
+  useEffect(() => {
+    mutate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const hundleValueChange = (e) => {
@@ -109,12 +126,12 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
         }
       ).then((res) => {
         if (res.status === 200) {
-          window.location.reload();
-          // setTrainingMenu("プッシュアップ");
-          // setStep("ステップ１");
-          // setReps("１回");
-          // setSets("１セット");
-          // setMemo("");
+          // window.location.reload();
+          setTrainingMenu("プッシュアップ");
+          setStep("ステップ１");
+          setReps("１回");
+          setSets("１セット");
+          setMemo("");
         }
       });
     } catch (err) {
@@ -260,9 +277,14 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
             <p className="pt-4">トレーニング記録はありません</p>
           )}
         </div>
-        {/* <div>
-          <button className="bg-gray-500 p-10">PROPS</button>
-        </div> */}
+        <div>
+          <button
+            className="bg-gray-500 p-10"
+            onClick={() => console.log(userTrainingLogs)}
+          >
+            PROPS
+          </button>
+        </div>
       </div>
     </Layout>
   );
@@ -283,6 +305,6 @@ export async function getStaticProps({ params }) {
     await fetchUserTrainingLogs(params.id);
 
   return {
-    props: { userData, userTrainingLogsData },
+    props: { userData, userTrainingLogsData, revalidate: 3 },
   };
 }
