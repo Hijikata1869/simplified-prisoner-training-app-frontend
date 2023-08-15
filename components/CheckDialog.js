@@ -4,13 +4,12 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { deleteTrainingLog } from "../lib/training-logs";
 
 export default function CheckDialog({
-  dialogOpen,
-  setIsOpen,
   userId,
   trainingLogId,
+  isOpen,
+  setIsOpen,
 }) {
-  const hundleClick = (e, userId, trainingLogId) => {
-    e.preventDefault();
+  const hundleClick = (userId, trainingLogId) => {
     try {
       deleteTrainingLog(userId, trainingLogId).then((res) => {
         if (res.status === 200) {
@@ -26,7 +25,7 @@ export default function CheckDialog({
 
   return (
     <Dialog
-      open={dialogOpen}
+      open={isOpen}
       onClose={() => setIsOpen(false)}
       className="relative z-50"
     >
@@ -48,7 +47,7 @@ export default function CheckDialog({
             </button>
             <button
               className="mt-3 ml-2 inline-flex w-auto rounded-md bg-red-600 text-sm font-semibold text-white px-3 py-2 shadow-sm hover:bg-red-500"
-              onClick={(e) => hundleClick(e, userId, trainingLogId)}
+              onClick={() => hundleClick(userId, trainingLogId)}
             >
               削除する
             </button>

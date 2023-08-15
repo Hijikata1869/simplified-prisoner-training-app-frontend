@@ -7,6 +7,7 @@ import { fetchUserTrainingLogs } from "../../lib/training-logs";
 
 import Layout from "../../components/Layout";
 import CheckDialog from "../../components/CheckDialog";
+import SuccessAlert from "../../components/SuccessAlert";
 
 const trainingMenusArr = [
   "プッシュアップ",
@@ -54,8 +55,10 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const [sets, setSets] = useState("１セット");
   const [memo, setMemo] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [userId, setUserId] = useState(0);
   const [trainingLogId, setTrainingLogId] = useState(0);
+  const [alertOpen, setAlertOpen] = useState(true);
   const stepsArr = makeSteps();
   const repsArr = makeReps();
   const setsArr = makeSets();
@@ -139,9 +142,9 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   };
 
   const hundleClick = (userId, trainingLogId) => {
-    setIsOpen(true);
     setUserId(userId);
     setTrainingLogId(trainingLogId);
+    setDialogOpen(true);
   };
 
   // const deleteTrainingLogAction = async () => {
@@ -167,13 +170,21 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
 
   return (
     <>
-      <CheckDialog
-        dialogOpen={isOpen}
-        setIsOpen={setIsOpen}
-        userId={userId}
-        trainingLogId={trainingLogId}
-      />
+      {dialogOpen ? (
+        <CheckDialog
+          userId={userId}
+          trainingLogId={trainingLogId}
+          isOpen={dialogOpen}
+          setIsOpen={setDialogOpen}
+        />
+      ) : null}
       <Layout title={`${user.name}さんのトレーニング記録`}>
+        {alertOpen ? (
+          <SuccessAlert
+            message="トレーニングを１件削除しました"
+            setAlertOpen={setAlertOpen}
+          />
+        ) : null}
         <div className="lg:w-96">
           {user.id === currentUser?.id ? (
             <>
