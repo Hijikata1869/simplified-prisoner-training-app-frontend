@@ -5,10 +5,12 @@ import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 
 import { loggedIn } from "../lib/sessions";
+import { fetchCurrentUser } from "../lib/users";
 
 export default function Header() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(false);
+  const [currentUser, setCurrentUser] = useState([]);
   const [cookies, setCookie, removeCookie] = useCookies(["_pta_session"]);
 
   useEffect(() => {
@@ -16,6 +18,19 @@ export default function Header() {
       .then((res) => {
         setIsLogin(res.loggedIn);
         console.log(res.loggedIn);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetchCurrentUser()
+      .then((res) => {
+        return res.currentUser.currentUser;
+      })
+      .then((currentUser) => {
+        setCurrentUser(currentUser);
       })
       .catch((err) => {
         console.error(err);
@@ -60,15 +75,27 @@ export default function Header() {
         </div>
         {isLogin ? (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end md:flex md:flex-1 md:justify-end">
-            <Link href="/sign-in">
-              <a
-                suppressHydrationWarning
-                className="text-sm font-semibold leading-6 text-gray-900"
-                onClick={(e) => hundleLogout(e)}
-              >
-                ログアウトする<span aria-hidden="true">&rarr;</span>
-              </a>
-            </Link>
+            <div className="pr-10">
+              <Link href={`/users/${currentUser.id}`}>
+                <a
+                  suppressHydrationWarning
+                  className="text-sm font-semibold leading-6 text-gray-900"
+                >
+                  マイページ
+                </a>
+              </Link>
+            </div>
+            <div>
+              <Link href="/sign-in">
+                <a
+                  suppressHydrationWarning
+                  className="text-sm font-semibold leading-6 text-gray-900"
+                  onClick={(e) => hundleLogout(e)}
+                >
+                  ログアウトする<span aria-hidden="true">&rarr;</span>
+                </a>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end md:flex md:flex-1 md:justify-end">

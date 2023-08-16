@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import useSWR from "swr";
 
 import { fetchCurrentUser, fetchUser, getAllUserIds } from "../../lib/users";
@@ -47,9 +46,7 @@ const makeSets = () => {
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
-  const router = useRouter();
   const { user } = userData;
-  // const { userTrainingLogs } = userTrainingLogsData;
   const [currentUser, setCurrentUser] = useState([]);
   const [trainingMenu, setTrainingMenu] = useState("プッシュアップ");
   const [step, setStep] = useState("ステップ１");
@@ -352,14 +349,6 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
               <p className="pt-4">トレーニング記録はありません</p>
             )}
           </div>
-          {/* <div>
-            <button
-              className="bg-gray-500 p-10"
-              onClick={() => console.log(userTrainingLogs)}
-            >
-              PROPS
-            </button>
-          </div> */}
         </div>
       </Layout>
     </>
