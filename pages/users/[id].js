@@ -9,6 +9,7 @@ import { deleteTrainingLog } from "../../lib/training-logs";
 import Layout from "../../components/Layout";
 import CheckDialog from "../../components/CheckDialog";
 import SuccessAlert from "../../components/SuccessAlert";
+import FailedAlert from "../../components/FailedAlert";
 
 const trainingMenusArr = [
   "プッシュアップ",
@@ -58,6 +59,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const [modalConfig, setModalConfig] = useState();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const [failedAlertOpen, setFailedAlertOpen] = useState(false);
   const stepsArr = makeSteps();
   const repsArr = makeReps();
   const setsArr = makeSets();
@@ -140,7 +142,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
     }
   };
 
-  const hundleClick = async (userId, trainingLogId) => {
+  const hundleDeleteClick = async (userId, trainingLogId) => {
     setDialogOpen(true);
     const ret = await new Promise((resolve) => {
       setModalConfig({
@@ -155,7 +157,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
             if (res.status === 200) {
               setDeleteAlertOpen(true);
             } else {
-              alert("削除失敗！");
+              setFailedAlertOpen(true);
             }
           })
           .then(() => {
@@ -176,6 +178,12 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
           <SuccessAlert
             message="トレーニングを１件削除しました"
             setAlertOpen={setDeleteAlertOpen}
+          />
+        ) : null}
+        {failedAlertOpen ? (
+          <FailedAlert
+            message="削除できませんでした"
+            setAlertOpen={setFailedAlertOpen}
           />
         ) : null}
         <div className="lg:w-96">
@@ -313,7 +321,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
                       <button
                         className="mt-2 inline-flex w-auto rounded-md bg-red-500 text-sm text-white px-3 py-2 shadow-sm hover:bg-red-400"
                         onClick={() =>
-                          hundleClick(trainingLog.user_id, trainingLog.id)
+                          hundleDeleteClick(trainingLog.user_id, trainingLog.id)
                         }
                       >
                         削除する
