@@ -60,6 +60,8 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const [failedAlertOpen, setFailedAlertOpen] = useState(false);
+  const [postAlertOpen, setPostAlertOpen] = useState(false);
+  const [postFailedAlertOpen, setPostFailedAlertOpen] = useState(false);
   const stepsArr = makeSteps();
   const repsArr = makeReps();
   const setsArr = makeSets();
@@ -134,7 +136,11 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
         }
       ).then((res) => {
         if (res.status === 200) {
-          window.location.reload();
+          setPostAlertOpen(true);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          setPostFailedAlertOpen(true);
+          window.scrollTo({ top: 0, behavior: "smooth" });
         }
       });
     } catch (err) {
@@ -174,10 +180,22 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
     <>
       {dialogOpen && <CheckDialog modalConfig={modalConfig} />}
       <Layout title={`${user.name}さんのトレーニング記録`}>
+        {postAlertOpen ? (
+          <SuccessAlert
+            message="トレーニングを記録しました"
+            setAlertOpen={setPostAlertOpen}
+          />
+        ) : null}
         {deleteAlertOpen ? (
           <SuccessAlert
             message="トレーニングを１件削除しました"
             setAlertOpen={setDeleteAlertOpen}
+          />
+        ) : null}
+        {postFailedAlertOpen ? (
+          <FailedAlert
+            message="記録できませんでした"
+            setAlertOpen={setPostFailedAlertOpen}
           />
         ) : null}
         {failedAlertOpen ? (
