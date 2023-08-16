@@ -4,6 +4,7 @@ import useSWR from "swr";
 
 import { fetchCurrentUser, fetchUser, getAllUserIds } from "../../lib/users";
 import { fetchUserTrainingLogs } from "../../lib/training-logs";
+import { deleteTrainingLog } from "../../lib/training-logs";
 
 import Layout from "../../components/Layout";
 import CheckDialog from "../../components/CheckDialog";
@@ -54,11 +55,9 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const [reps, setReps] = useState("１回");
   const [sets, setSets] = useState("１セット");
   const [memo, setMemo] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [userId, setUserId] = useState(0);
-  const [trainingLogId, setTrainingLogId] = useState(0);
-  const [alertOpen, setAlertOpen] = useState(true);
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const stepsArr = makeSteps();
   const repsArr = makeReps();
   const setsArr = makeSets();
@@ -141,48 +140,42 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
     }
   };
 
-  const hundleClick = (userId, trainingLogId) => {
-    setUserId(userId);
-    setTrainingLogId(trainingLogId);
+  const hundleClick = async (userId, trainingLogId) => {
     setDialogOpen(true);
+    const ret = await new Promise((resolve) => {
+      setModalConfig({
+        promiseResolve: resolve,
+        setIsOpen: setDialogOpen,
+      });
+    });
+    if (ret === "ok") {
+      try {
+        deleteTrainingLog(userId, trainingLogId)
+          .then((res) => {
+            if (res.status === 200) {
+              setDeleteAlertOpen(true);
+            } else {
+              alert("削除失敗！");
+            }
+          })
+          .then(() => {
+            setDialogOpen(false);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+      } catch (err) {
+        console.error(err);
+      }
+    }
   };
-
-  // const deleteTrainingLogAction = async () => {
-  //   try {
-  //     await fetch(
-  //       `${process.env.NEXT_PUBLIC_RAILSAPI_URL}/users/${user.id}/training_logs/${id}`,
-  //       {
-  //         method: "DELETE",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         credentials: "include",
-  //       }
-  //     ).then((res) => {
-  //       if (res.status === 200) {
-  //         alert("削除完了！");
-  //       }
-  //     });
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
 
   return (
     <>
-      {dialogOpen ? (
-        <CheckDialog
-          userId={userId}
-          trainingLogId={trainingLogId}
-          isOpen={dialogOpen}
-          setIsOpen={setDialogOpen}
-        />
-      ) : null}
+      {dialogOpen && <CheckDialog modalConfig={modalConfig} />}
       <Layout title={`${user.name}さんのトレーニング記録`}>
-        {alertOpen ? (
+        {deleteAlertOpen ? (
           <SuccessAlert
             message="トレーニングを１件削除しました"
-            setAlertOpen={setAlertOpen}
+            setAlertOpen={setDeleteAlertOpen}
           />
         ) : null}
         <div className="lg:w-96">

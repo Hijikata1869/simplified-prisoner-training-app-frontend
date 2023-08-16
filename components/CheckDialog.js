@@ -1,31 +1,11 @@
 import { Dialog } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-import { deleteTrainingLog } from "../lib/training-logs";
-
-export default function CheckDialog({
-  userId,
-  trainingLogId,
-  isOpen,
-  setIsOpen,
-}) {
-  const hundleClick = (userId, trainingLogId) => {
-    try {
-      deleteTrainingLog(userId, trainingLogId).then((res) => {
-        if (res.status === 200) {
-          alert("削除成功！");
-        } else {
-          alert("削除失敗！");
-        }
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+export default function CheckDialog({ modalConfig }) {
+  const { promiseResolve, setIsOpen } = modalConfig;
   return (
     <Dialog
-      open={isOpen}
+      open={true}
       onClose={() => setIsOpen(false)}
       className="relative z-50"
     >
@@ -47,7 +27,7 @@ export default function CheckDialog({
             </button>
             <button
               className="mt-3 ml-2 inline-flex w-auto rounded-md bg-red-600 text-sm font-semibold text-white px-3 py-2 shadow-sm hover:bg-red-500"
-              onClick={() => hundleClick(userId, trainingLogId)}
+              onClick={() => promiseResolve("ok")}
             >
               削除する
             </button>

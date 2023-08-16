@@ -8,7 +8,10 @@ export default function SuccessAlert({ message, setAlertOpen }) {
         <XMarkIcon
           className="w-6 h-6"
           role="button"
-          onClick={() => setAlertOpen(false)}
+          onClick={() => {
+            setAlertOpen(false);
+            window.location.reload();
+          }}
         />
       </span>
     </div>
