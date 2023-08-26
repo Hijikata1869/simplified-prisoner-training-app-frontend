@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { fetchCurrentUser, fetchUser, getAllUserIds } from "../../lib/users";
 import { fetchUserTrainingLogs } from "../../lib/training-logs";
 import { deleteTrainingLog } from "../../lib/training-logs";
+import { loggedIn } from "../../lib/sessions";
 
 import Layout from "../../components/Layout";
 import CheckDialog from "../../components/CheckDialog";
@@ -59,6 +60,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const [failedAlertOpen, setFailedAlertOpen] = useState(false);
   const [postAlertOpen, setPostAlertOpen] = useState(false);
   const [postFailedAlertOpen, setPostFailedAlertOpen] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
   const stepsArr = makeSteps();
   const repsArr = makeReps();
   const setsArr = makeSets();
@@ -91,6 +93,16 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
     mutate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    loggedIn()
+      .then((res) => {
+        setIsLogin(res.loggedIn);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  });
 
   const hundleValueChange = (e) => {
     switch (e.target.id) {
@@ -155,18 +167,14 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
     });
     if (ret === "ok") {
       try {
-        deleteTrainingLog(userId, trainingLogId)
-          .then((res) => {
-            if (res.status === 200) {
-              setDeleteAlertOpen(true);
-            } else {
-              setFailedAlertOpen(true);
-            }
-          })
-          .then(() => {
+        await deleteTrainingLog(userId, trainingLogId).then((res) => {
+          if (res.status === 200) {
             setDialogOpen(false);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          });
+            setDeleteAlertOpen(true);
+          } else {
+            setFailedAlertOpen(true);
+          }
+        });
       } catch (err) {
         console.error(err);
       }
@@ -332,16 +340,21 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
                       <p className="text-xs text-gray-500">メモ</p>
                       <p>{`${trainingLog.memo}`}</p>
                     </div>
-                    <div className="flex justify-center">
-                      <button
-                        className="mt-2 inline-flex w-auto rounded-md bg-red-500 text-sm text-white px-3 py-2 shadow-sm hover:bg-red-400"
-                        onClick={() =>
-                          hundleDeleteClick(trainingLog.user_id, trainingLog.id)
-                        }
-                      >
-                        削除する
-                      </button>
-                    </div>
+                    {isLogin ? (
+                      <div className="flex justify-center">
+                        <button
+                          className="mt-2 inline-flex w-auto rounded-md bg-red-500 text-sm text-white px-3 py-2 shadow-sm hover:bg-red-400"
+                          onClick={() =>
+                            hundleDeleteClick(
+                              trainingLog.user_id,
+                              trainingLog.id
+                            )
+                          }
+                        >
+                          削除する
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 );
               })

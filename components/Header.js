@@ -17,7 +17,6 @@ export default function Header() {
     loggedIn()
       .then((res) => {
         setIsLogin(res.loggedIn);
-        console.log(res.loggedIn);
       })
       .catch((err) => {
         console.error(err);
