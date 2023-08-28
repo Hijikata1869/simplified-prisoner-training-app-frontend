@@ -395,10 +395,8 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
             ) : (
               <p className="pt-4">トレーニング記録はありません</p>
             )}
-          </div>
-          {Number(id) === currentUser.id ? (
-            <div className="mt-20">
-              <div className="flex justify-center">
+            {Number(id) === currentUser.id ? (
+              <div className="mt-20 flex w-80 justify-center">
                 <button
                   className="border mt-2 w-auto rounded-md border-red-500 bg-white text-sm text-red-500 px-3 py-2 shadow-sm hover:bg-red-500 hover:text-white"
                   onClick={() => hundleDeleteAccount(currentUser.id)}
@@ -406,8 +404,8 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
                   このアカウントを削除する
                 </button>
               </div>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
       </Layout>
     </>
