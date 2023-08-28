@@ -28,7 +28,6 @@ export default function CheckDialog({ modalConfig }) {
             <button
               className="mt-3 ml-2 inline-flex w-auto rounded-md bg-red-600 text-sm font-semibold text-white px-3 py-2 shadow-sm hover:bg-red-500"
               onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
                 promiseResolve("ok");
               }}
             >

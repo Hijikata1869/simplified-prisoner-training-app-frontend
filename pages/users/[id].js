@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
-import { fetchCurrentUser, fetchUser, getAllUserIds } from "../../lib/users";
+import {
+  fetchCurrentUser,
+  fetchUser,
+  getAllUserIds,
+  deleteUser,
+} from "../../lib/users";
 import { fetchUserTrainingLogs } from "../../lib/training-logs";
 import { deleteTrainingLog } from "../../lib/training-logs";
 import { loggedIn } from "../../lib/sessions";
@@ -174,12 +179,38 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
           if (res.status === 200) {
             setDialogOpen(false);
             setDeleteAlertOpen(true);
+            window.scrollTo({ top: 0, behavior: "smooth" });
           } else {
+            setDialogOpen(false);
             setFailedAlertOpen(true);
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }
         });
       } catch (err) {
         console.error(err);
+      }
+    }
+  };
+
+  const hundleDeleteAccount = async (userId) => {
+    setDialogOpen(true);
+    const ret = await new Promise((resolve) => {
+      setModalConfig({
+        promiseResolve: resolve,
+        setIsOpen: setDialogOpen,
+      });
+    });
+    if (ret === "ok") {
+      try {
+        await deleteUser(userId).then((res) => {
+          if (res.status === 200) {
+            router.push("/");
+          }
+        });
+      } catch {
+        setDialogOpen(false);
+        setFailedAlertOpen(true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
   };
@@ -365,6 +396,18 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
               <p className="pt-4">トレーニング記録はありません</p>
             )}
           </div>
+          {Number(id) === currentUser.id ? (
+            <div className="mt-20">
+              <div className="flex justify-center">
+                <button
+                  className="border mt-2 w-auto rounded-md border-red-500 bg-white text-sm text-red-500 px-3 py-2 shadow-sm hover:bg-red-500 hover:text-white"
+                  onClick={() => hundleDeleteAccount(currentUser.id)}
+                >
+                  このアカウントを削除する
+                </button>
+              </div>
+            </div>
+          ) : null}
         </div>
       </Layout>
     </>
