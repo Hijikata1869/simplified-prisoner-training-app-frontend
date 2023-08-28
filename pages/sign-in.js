@@ -3,11 +3,13 @@ import { useRouter } from "next/router";
 import { useCookies } from "react-cookie";
 
 import Layout from "../components/Layout";
+import FailedAlert from "../components/FailedAlert";
 
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [failedAlertOpen, setFailedAlertOpen] = useState(false);
   const [cookies, setCookie] = useCookies(["_pta_session"]);
 
   const login = async (e) => {
@@ -35,6 +37,9 @@ export default function SignIn() {
         })
         .then((user) => {
           router.push(`users/${user.id}`);
+        })
+        .catch(() => {
+          setFailedAlertOpen(true);
         });
     } catch (err) {
       console.error(err);
@@ -43,6 +48,12 @@ export default function SignIn() {
 
   return (
     <Layout title="ログイン">
+      {failedAlertOpen ? (
+        <FailedAlert
+          message="ログインできませんでした"
+          setAlertOpen={setFailedAlertOpen}
+        />
+      ) : null}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8 lg:pb-40">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">

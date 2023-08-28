@@ -98,14 +98,25 @@ export default function Header() {
           </div>
         ) : (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end md:flex md:flex-1 md:justify-end">
-            <Link href="/sign-in">
-              <a
-                suppressHydrationWarning
-                className="text-sm font-semibold leading-6 text-gray-900"
-              >
-                ログインはこちら<span aria-hidden="true">&rarr;</span>
-              </a>
-            </Link>
+            {router.pathname === "/sign-in" ? (
+              <Link href="/sign-up">
+                <a
+                  suppressHydrationWarning
+                  className="text-sm font-semibold leading-6 text-gray-900"
+                >
+                  新規登録はこちら<span aria-hidden="true">&rarr;</span>
+                </a>
+              </Link>
+            ) : (
+              <Link href="/sign-in">
+                <a
+                  suppressHydrationWarning
+                  className="text-sm font-semibold leading-6 text-gray-900"
+                >
+                  ログインはこちら<span aria-hidden="true">&rarr;</span>
+                </a>
+              </Link>
+            )}
           </div>
         )}
       </nav>
