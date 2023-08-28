@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import useSWR from "swr";
 
 import { fetchCurrentUser, fetchUser, getAllUserIds } from "../../lib/users";
@@ -47,6 +48,8 @@ const makeSets = () => {
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
+  const router = useRouter();
+  const { id } = router.query;
   const { user } = userData;
   const [currentUser, setCurrentUser] = useState([]);
   const [trainingMenu, setTrainingMenu] = useState("プッシュアップ");
@@ -340,7 +343,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
                       <p className="text-xs text-gray-500">メモ</p>
                       <p>{`${trainingLog.memo}`}</p>
                     </div>
-                    {isLogin ? (
+                    {currentUser.id === trainingLog.user_id ? (
                       <div className="flex justify-center">
                         <button
                           className="mt-2 inline-flex w-auto rounded-md bg-red-500 text-sm text-white px-3 py-2 shadow-sm hover:bg-red-400"
