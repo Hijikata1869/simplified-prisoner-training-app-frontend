@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
+import { useCookies } from "react-cookie";
+
 import {
   fetchCurrentUser,
   fetchUser,
@@ -72,6 +74,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
   const stepsArr = makeSteps();
   const repsArr = makeReps();
   const setsArr = makeSets();
+  const [cookies, setCookie, removeCookie] = useCookies(["_pta_session"]);
 
   const {
     data: { userTrainingLogs },
@@ -212,6 +215,29 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
         setFailedAlertOpen(true);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
+    }
+  };
+
+  const hundleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_RAILSAPI_URL}login`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            removeCookie("_pta_session", { path: "/" });
+          }
+        })
+        .then(() => {
+          router.push("/");
+        });
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -374,7 +400,7 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
                       <p className="text-xs text-gray-500">メモ</p>
                       <p>{`${trainingLog.memo}`}</p>
                     </div>
-                    {currentUser.id === trainingLog.user_id ? (
+                    {currentUser?.id === trainingLog.user_id ? (
                       <div className="flex justify-center">
                         <button
                           className="mt-2 inline-flex w-auto rounded-md bg-red-500 text-sm text-white px-3 py-2 shadow-sm hover:bg-red-400"
@@ -395,8 +421,14 @@ export default function UserTrainingLogs({ userData, userTrainingLogsData }) {
             ) : (
               <p className="pt-4">トレーニング記録はありません</p>
             )}
-            {Number(id) === currentUser.id ? (
-              <div className="mt-20 flex w-80 justify-center">
+            {Number(id) === currentUser?.id ? (
+              <div className="mt-20 flex flex-col w-80 justify-center">
+                <button
+                  className="lg:hidden md:hidden mb-20 rounded-full px-3.5 py-2.5 text-slate-200 bg-gray-900 font-bold"
+                  onClick={(e) => hundleLogout(e)}
+                >
+                  ログアウトする
+                </button>
                 <button
                   className="border mt-2 w-auto rounded-md border-red-500 bg-white text-sm text-red-500 px-3 py-2 shadow-sm hover:bg-red-500 hover:text-white"
                   onClick={() => hundleDeleteAccount(currentUser.id)}
