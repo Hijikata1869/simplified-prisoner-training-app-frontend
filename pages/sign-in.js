@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { useCookies } from "react-cookie";
+import Link from "next/link";
 
 import Layout from "../components/Layout";
 import FailedAlert from "../components/FailedAlert";
@@ -118,6 +119,16 @@ export default function SignIn() {
               </button>
             </div>
           </form>
+          <div className="lg:hidden md:hidden flex justify-center">
+            <p className="mt-10 text-center text-sm text-gray-500">
+              はじめてご利用の方は{" "}
+              <Link href="/sign-up">
+                <a className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                  こちらから新規登録
+                </a>
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </Layout>
