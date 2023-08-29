@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useCookies } from "react-cookie";
 
 import Layout from "../components/Layout";
+import FailedAlert from "../components/FailedAlert";
 
 export default function SignUp() {
   const router = useRouter();
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
   const [confirmationPassword, setConfirmationPassword] = useState("");
   const [cookies, setCookie] = useCookies(["_pta_session"]);
 
@@ -40,6 +42,9 @@ export default function SignUp() {
         })
         .then((user) => {
           router.push(`users/${user.id}`);
+        })
+        .catch(() => {
+          setAlertOpen(true);
         });
     } catch (err) {
       console.error(err);
@@ -48,6 +53,12 @@ export default function SignUp() {
 
   return (
     <Layout title="新規登録">
+      {alertOpen && (
+        <FailedAlert
+          message="登録できませんでした"
+          setAlertOpen={setAlertOpen}
+        />
+      )}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
